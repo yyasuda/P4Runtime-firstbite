@@ -2,12 +2,29 @@
 #include <v1model.p4>
 
 #define CPU_PORT 255
+/*
+  255 is confirmed for opennetworking/p4mn　(Mininet on docker)
+  192 is confirmed for WEDGE-100BF-32X (2 pipe device)
+  320 is probably good for 4 pipe devices
+*/
 
 const bit<16> TYPE_IPV4 = 0x800;
 
 typedef bit<9> egressSpec_t;
 typedef bit<48> macAddr_t;
 typedef bit<32> ip4Addr_t;
+
+@controller_header("packet_out")
+header packet_out_header_t {
+    bit<9> egress_port;
+    bit<7> _pad;
+}
+
+@controller_header("packet_in")
+header packet_in_header_t {
+    bit<9> ingress_port;
+    bit<7> _pad;
+}
 
 header ethernet_t {
     macAddr_t dstAddr;
@@ -37,15 +54,25 @@ struct metadata {
 struct headers {
     ethernet_t ethernet;
     ipv4_t  ipv4;
+    packet_out_header_t packet_out;
+    packet_in_header_t packet_in;
 }
 
 parser MyParser(packet_in packet, out headers hdr, inout metadata meta,
                 inout standard_metadata_t standard_metadata)
 {
     state start {
-        transition parse_ethernet;
+        transition select(standard_metadata.ingress_port) {
+            CPU_PORT: parse_packet_out;
+            default: parse_ethernet;
+        }
     }
 
+    state parse_packet_out {
+        packet.extract(hdr.packet_out);
+        transition parse_ethernet;
+    }
+ 
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
@@ -74,6 +101,11 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     action to_controller() {
         standard_metadata.egress_spec = CPU_PORT;
+        // Packets sent to the controller needs to be prepended with the
+        // packet-in header. By setting it valid we make sure it will be
+        // deparsed on the wire (see MyDeparser).
+        hdr.packet_in.setValid();
+        hdr.packet_in.ingress_port = standard_metadata.ingress_port;
     }
 
     table ether_addr_table {
@@ -89,8 +121,17 @@ control MyIngress(inout headers hdr, inout metadata meta,
     }
 
     apply {
-        if (hdr.ethernet.isValid()) {
-            ether_addr_table.apply();
+      if (standard_metadata.ingress_port == CPU_PORT) {
+            // Packet received from CPU_PORT, this is a packet-out sent by the
+            // controller. Skip table processing, set the egress port as
+            // requested by the controller (packet_out header) and remove the
+            // packet_out header.
+            standard_metadata.egress_spec = hdr.packet_out.egress_port;
+            hdr.packet_out.setInvalid();
+        } else {
+            if (hdr.ethernet.isValid()) {
+                ether_addr_table.apply();
+            }
         }
     }
 }
@@ -124,7 +165,9 @@ control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
 control MyDeparser(packet_out packet, in headers hdr)
 {
     apply {
+        packet.emit(hdr.packet_in);
         packet.emit(hdr.ethernet);
+        packet.emit(hdr.ipv4);
     }
 }
 
