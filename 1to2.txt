@@ -1,0 +1,24 @@
+updates {
+  type: INSERT
+  entity {
+    table_entry {
+      table_id: 33592100
+      match {
+        field_id: 1
+        exact {
+          value: "\000\000\000\000\000\002" # Octal expression
+        }
+      }
+      action {
+        action {
+          action_id: 16838673
+          params {
+            param_id: 1 
+            value: "\x00\x02" # Hexadecimal expression
+          }
+        }
+      }
+    }
+  }
+}
+
