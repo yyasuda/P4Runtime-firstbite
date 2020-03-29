@@ -21,31 +21,27 @@ Simple P4Runtime tutorial for starters.
 
 これら全て Docker 環境で動作するもので揃えています。最初はこのドキュメントに記述にあるものをそのまま使って下さい。
 
-## ツールの取得
+## Tools
 
-このチュートリアルで利用するDocker Imageを取得してください。
+このチュートリアルではすべて Docker 環境で実験を行います。
 
 #### P4C (modified)
 
-```shell
-$ docker pull yutakayasuda/p4c_python3
-```
+Docker Hub: [yutakayasuda/p4c_python3](https://hub.docker.com/repository/docker/yutakayasuda/p4c_python3)
 
 オリジナルの [p4lang/p4c](https://hub.docker.com/r/p4lang/p4c) はどう言うわけか python3 が正しく動きませんでした。何か間違えてるんでしょうか。。
 
 #### P4Runtime-enabled Mininet Docker Image
 
-```shell
-$ docker pull opennetworking/p4mn 
-```
+Docker Hub: [opennetworking/p4mn](https://hub.docker.com/r/opennetworking/p4mn)
+GitHub: [opennetworkinglab/p4mn-docker](https://github.com/opennetworkinglab/p4mn-docker)
 
 #### P4Runtime Shell (modified)
 
-```shell
-$ docker pull yutakayasuda/p4runtime-shell-dev
-```
+Docker Hub: [yutakayasuda/p4runtime-shell-dev](https://hub.docker.com/repository/docker/yutakayasuda/p4runtime-shell-dev)
+GitHub: [yyasuda/p4runtime-shell](https://github.com/yyasuda/p4runtime-shell)
 
-オリジナルの [P4Runtime Shell](https://hub.docker.com/r/p4lang/p4runtime-sh) にはPacket I/O のための機能が実装されていなかったので追加した上で、Dockerfile.dev でビルドしたものです。開発時の便利のためにless, vimを加えています。
+オリジナルの [P4Runtime Shell](https://hub.docker.com/r/p4lang/p4runtime-sh) にはPacket I/O のための機能が実装されていなかったのでそれを追加し、Dockerfile.dev でビルドしたものです。開発時の便利のためにless, vimを加えています。
 
 ## Step by Step
 
