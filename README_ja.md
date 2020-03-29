@@ -15,13 +15,13 @@ Simple P4Runtime tutorial for starters.
 
 これらの実験は、以下の環境で行います。
 
-- コントローラ役には P4Runtime Shell
-- スイッチ役には P4Runtime に対応した Mininet
-- P4 コンパイル環境
+- コントローラ役には P4Runtime Shell を用いる
+- スイッチ役には P4Runtime に対応した Mininet を用いる
+- P4 コンパイルにはオープンソースの p4c を用いる
 
 これら全て Docker 環境で動作するもので揃えています。最初はこのドキュメントに記述にあるものをそのまま使って下さい。
 
-## 準備
+## ツールの取得
 
 このチュートリアルで利用するDocker Imageを取得してください。
 
@@ -51,6 +51,10 @@ $ docker pull yutakayasuda/p4runtime-shell-dev
 
 さあ準備が整いました。以下に一つずつ手順を示します。順番に試していくのが良いでしょう。
 
+### Tutorial 0: [実験環境の準備](./t0_prepare.md)
+
+実験に先だって、P4 スイッチプログラムのコンパイルが必要です。次にMininetを起動し、そこにコントローラ代わりとなる、P4 Runtime Shell を接続させます。
+
 ### Tutorial 1: [Packet-Out 処理](./t1_packet-out.md)
 
 コントローラ役の P4Runtime Shell から Mininet 環境のスイッチに向けて Packet-Out メッセージを送ります。Out先として指定したポートに接続されたホストにパケットが届いていることを確認します。
@@ -61,7 +65,7 @@ $ docker pull yutakayasuda/p4runtime-shell-dev
 
 ### Tutorial 3: [テーブルへのエントリ追加](./t3_add-entry.md)
 
-上記のPacket I/O処理は、P4Runtime のStreamMessageRequest / StreamMessageResponse メッセージを用いて行われます。P4Runtimeには他にWriteRequestメッセージがあり、これを用いてテーブルなどのP4Runtime Entityの内容を更新することができます。ここではテーブルにMACアドレスを登録し、それに従ってスイッチに接続されたホストから送出されたpingパケットが、指定したポートに出力されることを確認します。
+Packet I/O処理は、P4Runtime のStreamMessageRequest / StreamMessageResponse メッセージを用いて行われます。P4Runtimeには他にWriteRequestメッセージがあり、これを用いてテーブルなどのP4Runtime Entityの内容を更新することができます。ここではテーブルにMACアドレスを登録し、それに従ってスイッチに接続されたホストから送出されたpingパケットが、指定したポートに出力されることを確認します。
 
 ### Tutorial 4: [パケットの往復](./t4_roundtrip.md)
 
