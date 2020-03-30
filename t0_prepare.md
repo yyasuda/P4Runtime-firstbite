@@ -1,12 +1,12 @@
-## Tutorial 0: 実験環境の準備
+## Tutorial 0: Preparing the Environment
 
-実験に先だって、P4 スイッチプログラムのコンパイルが必要です。それを使ってMininetを起動し、そこにコントローラ代わりとなる、P4 Runtime Shell を接続させます。
+The P4 switch program must be compiled before the experiment. Then start Mininet and start the P4 Runtime Shell, which is the controller replacement. Then connect them.
 
-### ether_switch.p4 のコンパイル
+### Compiling ether_switch.p4 
 
-#### 作業場所の作成とファイルのコピー
+#### Create working directory and copy a file
 
-作業用に /tmp/ether_switch ディレクトリを作り、この Tutorial にある P4 プログラム（ether_switch.p4）をコピーします。
+Create a/tmp/ether _ switch directory for your work and copy the P4 program (ether_switch.p4) from this tutorial.
 
 ```bash
 $ mkdir /tmp/ether_switch
@@ -16,9 +16,9 @@ ether_switch.p4
 $
 ```
 
-#### P4Cによるコンパイル
+#### Compiling by P4C
 
-以下のようにしてP4C Dockerコンテナを起動します。
+Launch the P4C Docker container.
 
 ```bash
 $ docker run -it -v /tmp/ether_switch/:/tmp/ yutakayasuda/p4c_python3 /bin/bash
@@ -28,9 +28,9 @@ ether_switch.p4
 root@f53fc79201b8:/tmp# 
 ```
 
-ホストの /tmp/ether_switch ディレクトリと docker の /tmp を同期させていることに注意してください。
+Note that we are synchronizing the/tmp/ether_switch directory on the host with the/tmp directory on the docker.
 
-そこでp4cコンテナから見て /tmp以下に見えているはずの ether_switch.p4 をコンパイルします。
+Now compile ether_switch.p4, which should be visible to the p4c container under /tmp.
 
 ```bash
 root@f53fc79201b8:/tmp# p4c --target bmv2 --arch v1model --p4runtime-files p4info.txt ether_switch.p4 
@@ -39,11 +39,11 @@ ether_switch.json  ether_switch.p4  ether_switch.p4i  p4info.txt
 root@f53fc79201b8:/tmp# 
 ```
 
-ここで生成した p4info.txt と ether_switch.json を使って、あとで P4Runtime Shell を起動することになります。
+You will later launch the P4 Runtime Shell using the p4info.txt and ether_switch.json you generated.
 
-## Mininet 環境の立ち上げ
+### Launching the Mininet Environment
 
-P4Runtimeに対応した Mininet 環境を、やはりDocker環境で起動します。起動時に --arp と --mac オプションを指定して、ARP 処理無しに ping テストなどができるようにしてあることに注意してください。
+Start a Mininet environment that supports the P4 Runtime, again in a Docker environment. Note that at boot time, the --arp and --mac options allow you to do things like ping tests without ARP processing.
 ```bash
 $ docker run --privileged --rm -it -p 50001:50001 opennetworking/p4mn --arp --topo single,2 --mac
 *** Error setting resource limits. Mininet's performance may be affected.
@@ -65,7 +65,7 @@ s1 .⚡️ simple_switch_grpc @ 50001
 *** Starting CLI:
 mininet>
 ```
-s1 の port 1 が h1 に、port2 が h2 に接続されていることが確認できます。
+You can see that port1 on s1 is connected to h1 and port2 is connected to h2.
 ```bash
 mininet> net
 h1 h1-eth0:s1-eth1
@@ -73,10 +73,9 @@ h2 h2-eth0:s1-eth2
 s1 lo:  s1-eth1:h1-eth0 s1-eth2:h2-eth0
 mininet> 
 ```
-h1 がスイッチにつながれているインタフェイス h1-eth0 の MAC アドレスは  00:00:00:00:00:01
-h2 がスイッチにつながれているインタフェイス h2-eth0 の MAC アドレスは  00:00:00:00:00:02
-であることが ifconfig コマンドで確認できるでしょう。
-
+You can see;
+h1-eth0 MAC address is 00:00:00:00:00:01 and
+h2-eth0 MAC address is 00:00:00:00:00:02 by ifconfing command.
 ```bash
 mininet> h1 ifconfig h1-eth0
 h1-eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
@@ -86,9 +85,9 @@ h1-eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 (snip...)
 ```
 
-## P4Runtime Shell と Mininet の接続
+## Connecting P4 Runtime Shell to Mininet
 
-### P4Runtime Shellの起動
+### Launching P4Runtime Shell
 
 ```bash
 Cecil(133)% docker run -it -v /tmp/ether_switch/:/tmp/ yutakayasuda/p4runtime-shell-dev /bin/bash
@@ -100,18 +99,17 @@ root@d633c64bbb3c:/p4runtime-sh# . activate
 ether_switch.json  ether_switch.p4  ether_switch.p4i  p4info.txt
 (venv) root@d633c64bbb3c:/tmp# 
 ```
-ここでもホストの /tmp/ether_switch ディレクトリと docker の /tmp を同期させていることに注意して下さい。それから、上の `. activate` 処理はすぐこの後の操作で重要なので忘れないように。
+Note again that we are synchronizing the/tmp/ether_switch directory on the host with /tmp on the docker. Also, don't forget that the above `. activate` process is important for later operations.
 
-### Mininet への接続
+### Connecting to Mininet 
 
-以下のようにして Mininet に接続します。IPアドレスは自身の環境に合わせて下さい。
-
+Connect to Mininet as follows. Adjust the IP address to your environment.
 ```bash
 (venv) root@d633c64bbb3c:/tmp# /p4runtime-sh/p4runtime-sh --grpc-addr 192.168.XX.XX:50001 --device-id 1 --election-id 0,1 --config p4info.txt,ether_switch.json
 *** Welcome to the IPython shell for P4Runtime ***
 P4Runtime sh >>>
 ```
-動作確認としてテーブル一覧を表示させてみます。
+Let's display the table list to confirm that it works.
 ```bash
 P4Runtime sh >>> tables 
 MyIngress.ether_addr_table
@@ -119,7 +117,7 @@ MyIngress.ether_addr_table
 P4Runtime sh >>> 
 ```
 
-以下にこのテーブルのフィールドやアクションの一覧を表示させてみます。ここで表示される id 情報に注意しておいてください。あとでP4Runtime メッセージを操作するときに出てきます。
+Below is a list of the fields and actions in this table. Note the id information displayed here. This information appears when you operate the P4 Runtime message.
 
 ```bash
 P4Runtime sh >>> tables["MyIngress.ether_addr_table"] 
@@ -145,20 +143,18 @@ size: 1024
 
 P4Runtime sh >>>  
 ```
-#### コネクションが切れる場合があります
+#### Connection may be broken
 
-しばらく放置しておくと、以下のようなメッセージが出ることがあります。
-
+If you leave it for a while, the following message may appear.
 ```bash
 P4Runtime sh >>> CRITICAL:root:StreamChannel error, closing stream
 CRITICAL:root:P4Runtime RPC error (UNAVAILABLE): Socket closed
 ```
+If this message appears, you must exit the P4 Runtime Shell and reconnect to Mininet before doing any action on the switch, such as Packet I/O or adding entries to the table.
 
-このメッセージが表示された場合は、一度 P4Runtime Shell を終了して再度 Mininet に接続し直さないと、スイッチに対して働きかける処理、たとえばPacket I/Oやテーブルへのエントリ追加操作が効きません。
+### Viewing information related to Packet-Out/In
 
-### Packet-Out/In に関係する情報を見る
-
-今回実験に使用する ether_switch.p4 プログラムは Packet-Out, Packet-In のためのヘッダ記述と、それを扱う処理を含んでいます。以下にヘッダ記述を示しながら、これ以降の実験に登場するメッセージの中で登場する id の値の意味について最低限の説明をします。
+The ether_switch.p4 program used in this experiment contains the header description for Packet-I/O and the handling of it. Here is a minimum description of the meaning of the id value that appears in the messages that appear in the following experiments, while showing the header description below.
 ```C++
 @controller_header("packet_out")
 header packet_out_header_t {
@@ -172,8 +168,7 @@ header packet_in_header_t {
     bit<7> _pad;
 }
 ```
-P4Runtime では標準的にポート番号を9bit で表現しています。それに続いて7bit のパディングを定義して、全体では2バイトのメタデータをPacket I/O 処理では利用します。
-このヘッダ記述をコンパイルすると、P4info Objectとして[ControllerPacketMetadata](https://p4.org/p4runtime/spec/master/P4Runtime-Spec.html#sec-controller-packet-meta) 情報が出力されます。その情報はp4info.txt ファイルを見れば確認できますが、例えばP4Runtime Shell でも以下のようにして得られます。
+The P4 Runtime typically represents a port number in 9 bits, followed by 7 bits of padding, all of which consume 2 bytes of metadata in Packet I/O processing. Compiling this header description generates the [ControllerPacketMetadata](https://p4.org/p4runtime/spec/master/P4Runtime-Spec.html#sec-controller-packet-meta) information as a P4info Object. You can find this information in the p4info.txt file, but also in the P4 Runtime Shell can show them like below.
 
 ```bash
 P4Runtime sh >>> p4info.controller_packet_metadata[0]
@@ -216,14 +211,12 @@ metadata {
 
 P4Runtime sh >>>   
 ```
-ここで表示されるmetadataの id 情報に注意しておいてください。あとでP4Runtime メッセージを操作するときに出てきます。
+Note the metadata id information displayed here. This information appears when you operate the P4 Runtime message later.
 
-もう想像が付くでしょう。P4Runtime で何かしらスイッチのP4 Entityを指し示す事が必要な場合、このid を使います。例えばテーブル MyIngress.ether_addr_table は id: 33592100 として、例えば Packet-Out 処理を行う時の出力先ポートは、metadata の id: 1 （最終的には metadata_id: に変換される）として指定します。
-
-
+Now, as you can guess. If the P4 Runtime needs to point to the switch's P4 Entity in some way, use this id. For example, the table MyIngress.ether_addr_table is specified as id: 33592100, and the output port for Packet-Out processing is specified as id: 1 (eventually converted to metadata _ id:) of metadata.
 
 
 ## Next Step
 
-#### Tutorial 1: [Packet-Out 処理](t1_packet-out.md)
+#### Tutorial 1: [Packet-Out Processing](t1_packet-out.md)
 

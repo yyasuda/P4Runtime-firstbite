@@ -89,3 +89,6 @@ Tutorial 3 に加えて、もう一つエントリをテーブルに追加し、
 その作業の多くを手伝ってくれた石原さん、西さん、小谷さんに感謝。特にこのチュートリアルで利用している ether_switch.p4 は、はじめ[小谷さんが作成したもの](https://gist.github.com/daisuke-k/1714c176e62280cc8627dc5e96846e56)に機能追加したものです。
 
 この資料がP4Runtimeに取り組もうとする初心者にとって、何かしらのお役に立ちますように。
+
+Yutaka Yasuda, Kyoto Sangyo University, Japan.
+

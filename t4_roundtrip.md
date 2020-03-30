@@ -1,10 +1,13 @@
-## Tutorial 4: パケットの往復
+## Tutorial 4: Packet Round Trip
 
-Tutorial 3 に加えて、もう一つエントリをテーブルに追加し、二つのホストの間でping パケットが正しく往復することを確認します。
+After Tutorial 3, add another entry to the table to verify that the ping packets are correctly going back and forth between the two hosts.
 
-###  ファイルのコピー
+###  Copy a file
 
-エントリ追加実験の際に使った 1to2.txt は h2 の MAC アドレス 00:00:00:00:00:02 向けのパケットを port 2 に送るメッセージでした。この復路に相当するメッセージが 2to1.txt にあります。作業用に作った /tmp/ether_switch ディレクトリにコピーします。ファイルの中身は以下の通りです。
+The '1to2.txt' file we used in our add-entry experiment was a message to send a packet to port2 destined for h2 with MAC address 00:00:00:00:00:02. There is a message on '2to1.txt' file to make this return. Copy it to the /tmp/ether_switch directory you have created for your work.
+
+The contents of the file are as follows.
+
 ```bash
 $ cat /tmp/ether_switch/return.txt 
 updates {
@@ -33,19 +36,19 @@ updates {
 $
 ```
 
-今度はMAC アドレス 00:00:00:00:00:01 宛てのパケットをport 1 に送るように指定されていることが分かるでしょう。
+Now you will see that it specifies that packets destined for the MAC address 00:00:00:00:00:01 should be sent to port1.
 
-### エントリ追加操作
+### Entry adding operation
 
-Tutorial 3 同様に、P4Runtime Shell 側で Write() 関数によってWriteRequest メッセージをスイッチに送り込みます。その結果、往復のための 2 つのエントリが登録されていることが確認出来るでしょう。
+As in Tutorial 3, on the P4 Runtime Shell side, the Write() function sends a WriteRequest message to the switch. As a result, you will see that there are two entries registered in total, for the round trip.
 
 ```bash
 P4Runtime sh >>> Write("/tmp/2to1.txt")
 
 P4Runtime sh >>> table_entry["MyIngress.ether_addr_table"].read(lambda a: print(a))   
 ```
-### ping 往復の確認
-この往復のためのエントリ設定ができた状態で ping 要求を送ると、正しく ping 応答が帰ってくることが確認できます。（Tutorial 3 の状態では h1 から ping パケットが送信されてh2 に到達したとしても、その返信パケットがh1 に届かないために、ping コマンドは待ちぼうけになっていましたね。）
+### Ping round trip check
+When you send a ping request with the round-trip entry set up, you can confirm that the ping response returns correctly. (In Tutorial 3, even if a ping packet was sent from h1 and reached h2, the ping command was waiting because the reply packet did not reach h1.)
 ```bash
 mininet> h1 ping -c 1 h2
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
@@ -56,7 +59,7 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.959/0.959/0.959/0.000 ms
 mininet> 
 ```
-このとき Packet-In が起きていないことを、Watch() 関数が何も受信せずタイムアウトする事によって確認出来ます。
+You can see that the Packet-In is not happening by the Watch() function times out without receiving any packet.
 ```bash
 P4Runtime sh >>> Watch()
 
@@ -67,8 +70,8 @@ P4Runtime sh >>>
 
 
 
-これで一連のチュートリアルが完了しました。お疲れさまでした。
+You have completed the series of tutorials. Congratulations!
 
 ## Next Step
 
-次は[ここ](README_ja.md#next-step)でしょうか。
+Is [this](README.md#next-step) good for the next? 

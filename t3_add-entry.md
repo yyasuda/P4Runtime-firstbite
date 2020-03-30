@@ -1,10 +1,10 @@
-## Tutorial 3: テーブルへのエントリ追加
+## Tutorial 3: Adding Entries to the Table
 
-Packet I/O処理は、P4Runtime のStreamMessageRequest / StreamMessageResponse メッセージを用いて行われます。P4Runtimeには他にWriteRequestメッセージがあり、これを用いてテーブルなどのP4Runtime Entityの内容を更新することができます。ここではテーブルにMACアドレスを登録し、それに従ってスイッチに接続されたホストから送出されたpingパケットが、指定したポートに出力されることを確認します。
+Packet I/O processing is performed using StreamMessageRequest / StreamMessageResponse messages of P4Runtime. P4 Runtime also has a WriteRequest message that can be used to update the contents of the P4 Runtime Entity, such as tables. Here, you register the MAC address in a table. And verify that a ping packet from the host attached to the switch outputs to the specified port accordingly.
 
-## ファイルのコピー
+### Copy a file
 
-作業用に作った /tmp/ether_switch ディレクトリに、この Tutorial にあるエントリ追加のためのメッセージファイル（1to2.txt）をコピーします。このメッセージは h2 の MAC アドレス 00:00:00:00:00:02 向けのパケットを port 2 に送るものです。少しファイルの中を見てみましょう。
+Copy the message file (1to2.txt) from this tutorial for adding entries to the /tmp/ether_switch directory you have created for your work. This message sends a packet to port 2 for the MAC address 00: 00: 00: 00: 00: 02 of h2. Let's take a look inside the file.
 
 ```bash
 $ cp 1to2.txt /tmp/ether_switch
@@ -35,9 +35,9 @@ updates {
 $
 ```
 
-テーブル id: 33592100 は MyIngress.ether_addr_table を、そこの match フィールドの id:1 は hdr.ethernet.dstAddr を意味します。続く value は 8 進数で 6 バイトぶん記述されており、つまり MAC アドレス 00:00:00:00:00:02 を意味します。
+The table id: 33592100 stands for MyIngress.ether_add_table, and the id: 1 in its match field stands for hdr.ethernet.dstAddr. The following octal value is 6 bytes long, meaning the MAC address 00:00:00:00:00:02.
 
-この辺りの情報は P4Runtime Shell を用いて確認することができます。
+You can check this information using the P4 Runtime Shell.
 
 ```bash
 P4Runtime sh >>> tables["MyIngress.ether_addr_table"] 
@@ -48,7 +48,7 @@ preamble {
 (snip...)
 ```
 
-同様に action_id: 16838673 は MyIngress.forward を指し、続く param_id: 1 の value は 16 進表記で 2 バイトぶん使って、出力先ポートが 2 であることを示しています。この時少し混乱するのは、P4 プログラムにおける packet_out_header_t の egress_port の定義は 9bit 幅であり、param_id: 1 で指定する value の 2 バイトの、下位9bitが使われる、ということです。
+Similarly, action_id: 16838673 points to MyIngress.forward, and the value of the following param_id: 1 uses 2 bytes in hexadecimal notation to indicate that the destination port is 2. The confusion at this time is that the definition of egress_port of packet_out_header_t in the P4 program is 9 bits wide, and the lower 9 bits of 2 bytes of the value specified by param_id: 1 are used.
 
 ```C++
 @controller_header("packet_out")
@@ -58,19 +58,19 @@ header packet_out_header_t {
 }
 ```
 
-（私は最初ここが上位ビットから9bit ぶん取り出されると思い込んでしまい、'\x01\x00' と書いて期待通り動かず悩みました。）
+(Initially, I was convinced that this would be taken out of the upper bits by 9, so I wrote '\x01\x00' and did not work as expected.)
 
-### エントリ追加操作
+### Entry adding operation
 
-P4Runtime Shell 側で Write() 関数を起動します。Write()関数はもともとP4Runtime Shell に用意されていたものです。指定されたファイルからメッセージ内容を読み取り、これをP4RuntimeのWriteRequest メッセージとしてスイッチに送り込みます。
-特に戻り値やメッセージは返ってきません。
+Execute the Write() function on the P4 Runtime Shell side. The Write() function is originally provided by the P4 Runtime Shell. It reads the message content from the specified file and sends it to the switch as a P4 Runtime WriteRequest message.
+No return value or message is returned.
 
 ```bash
 P4Runtime sh >>> Write("/tmp/1to2.txt")
 
 P4Runtime sh >>> 
 ```
-追加されていることをテーブルの中身を表示させて確認します。
+View the contents of the table to see if it has been added correctly.
 ```bash
 P4Runtime sh >>> table_entry["MyIngress.ether_addr_table"].read(lambda a: print(a))
 table_id: 33592100 ("MyIngress.ether_addr_table")
@@ -95,16 +95,16 @@ P4Runtime sh >>>
 
 いまはエントリに追加されることを確認する方法だけを示しておきますが、以下のようにして実際に転送されていることを確認することもできます。
 
-- Mininet 上で `h1 ping -c 1 h2` として何かしらパケットを送り出す（Tutorial 2 参照）
-- h2 上での受信を `h2 tcpdump -XX -i h2-eth0` として確認する（Tutorial 1 参照）
+- Send some packets over Mininet as `h1ping -c 1 h2` (See Tutorial 2)
+- Confirm the reception on h2 as `h2 tcpdump -XX -i h2-eth0` (See Tutorial 1)
 
-### 参考：エントリの削除
+### Note: Deleting entries
 
-以下のようにして登録されているエントリをすべて表示することができていました。
+You can display all the registered entries as follows:
 ```bash
 P4Runtime sh >>> table_entry["MyIngress.ether_addr_table"].read(lambda a: print(a))
 ```
-同様に以下のようにして登録したエントリをすべて削除することができます。
+Similarly, you can delete all entries you have registered as follows:
 ```bash
 P4Runtime sh >>> table_entry["MyIngress.ether_addr_table"].read(lambda a: a.delete())
 ```
@@ -113,5 +113,5 @@ P4Runtime sh >>> table_entry["MyIngress.ether_addr_table"].read(lambda a: a.dele
 
 ## Next Step
 
-#### Tutorial 4: [パケットの往復](t4_roundtrip.md)
+#### Tutorial 4: [Packet Round Trip](t4_roundtrip.md)
 

@@ -1,32 +1,32 @@
-## Tutorial 2: Packet-In 処理
+## Tutorial 2: Packet-In Processing
 
-用意した P4 プログラムは宛先として未知のMACアドレスをもつパケットが来たら、それをPacket-In としてコントローラに送るように作られています。ここではスイッチに接続されたホストからpingパケットを送出すると、それがPacket-Inとなって P4Runtime Shell に受信されることを確認します。
+When a packet arrives with an unknown MAC address as the destination, the prepared P4 program will send it to the controller as a Packet-In. Here we see that if a host attached to the switch sends a ping packet, it becomes a Packet-In and is received by the P4 Runtime Shell.
 
-### 手順
+### Steps
 
-以下のプロセスで Packet In が行われていることを確認します。
-1. P4Runtime Shell 側で Watch() 関数を起動する
-2. Mininet 側で ping パケットを送出する
-3. Watch() 関数がそれを受け取って画面に表示する
+Verify that Packet-In is performed in the following process.
+1. Execute Watch() function on the P4 Runtime Shell side
+2. Send a ping packets on Mininet side
+3. Watch() function receives it and displays it on the screen
 
-なお、Packet In されたデータはしばらくバッファに残っているので、処理 1, 2 の順を逆転して 2, 1 の順で作業しても問題なく Packet-In を目撃することができます。
+Note that the Packet-In data remains in the buffer for a while, so it is no problem to see the Packet-In by reversing the order of processing 1 and 2 and working in the order of 2 and 1.
 
-**1. Watch() 関数の実行**
+### Excecuting Watch() function 
 
-P4Runtime Shell プロンプトで、Watch() 関数を実行します。
+At the P4 Runtime Shell prompt, run the Watch () function.
 ```bash
 P4Runtime sh >>> Watch()
 ```
-**2. ping パケットの送出**
+### Sending a ping packet
 
-Mininet プロンプトで、ホスト h1 から h2 にめがけて ping パケットを一つだけ送出します。
+At the Mininet prompt, send a single ping packet from host h1 to h2.
 ```bash
 mininet> h1 ping -c 1 h2
 PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
 ```
-この状態では ping の返信が来ないので、ping コマンドはタイムアウトまで終了せずこの状態で止まります。
+In this state, no ping replies are received, so the ping command does not finish until it times out and stops.
 
-**3. Watch() 側に受け取ったパケットが表示される**
+### Watch() shows received packets
 
 ```bash
 P4Runtime sh >>> Watch()
@@ -43,9 +43,8 @@ packet {
   }
 }
 ```
-metadata_id: 1 は packet_in の ingress_port に当たり、スイッチの port 1 から入ってきたことが示されています。ここで h2 ping -c 1 h1 として実験すれば、port 2 から届いたことが確認できるはずです。
-
-なお Watch() 関数は 3 秒でタイムアウトします。その時は以下のように表示されてWatch()関数が終了します。
+The metadata_id: 1 corresponds to the ingress_port of packet_in. It means that the packet came in from port 1 of the switch. Now experiment with `h2 ping -c 1 h1` and you will see it coming from port 2.
+Note that the Watch() function times out after 3 seconds. At that time, the following is displayed and the Watch() function ends.
 ```bash
 P4Runtime sh >>> Watch()
 None returned
@@ -56,5 +55,5 @@ P4Runtime sh >>>
 
 ## Next Step
 
-#### Tutorial 3: [テーブルへのエントリ追加](t3_add-entry.md)
+#### Tutorial 3: [Adding Entries to the Table](t3_add-entry.md)
 

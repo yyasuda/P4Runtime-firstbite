@@ -1,10 +1,10 @@
-## Tutorial 1: Packet-Out 処理
+## Tutorial 1: Packet-Out Processing
 
-コントローラ役の P4Runtime Shell から Mininet 環境のスイッチに向けて Packet-Out メッセージを送ります。Out先として指定したポートに接続されたホストにパケットが届いていることを確認します。
+The P4 Runtime Shell acting as a controller sends a Packet-Out message to the switch in the Mininet environment. Verify that the packet arriving at the host connected to the port you specify as the Out destination.
 
-### ファイルのコピー
+### Copy a file
 
-作業用に作った /tmp/ether_switch ディレクトリに、この Tutorial にあるパケットアウトのためのメッセージファイル（packetout.txt）をコピーします。少しファイルの中を見てみましょう。
+Copy the packet-out message file (packetout.txt) from this tutorial to the /tmp/ether_switch directory you have created for your work. Let's take a look inside the file.
 
 ```bash
 $ cp 1to2.txt /tmp/ether_switch
@@ -18,14 +18,14 @@ packet {
 }
 $
 ```
-P4Runtime におけるPacket-Out 処理は、StreamMessageRequest というメッセージで、packet を指定してやることで実現されます。packetout.txt ファイルはこのStreamMessageRequest メッセージの内容そのものに当たります。
-- payload はデータリンク層のパケットがまるまる格納されています。8 進表記 "\377\377" は16進表記での "\xff" ですから、このペイロードは、宛先・送り元 MAC アドレスがともに ff:ff:ff:ff:ff:ff で、Protocol Type が 00 であり、そのあとにABCDE… と幾らかデータが続くことを意味します。
-- metadata_id 1 の metadata は Packet Out 先のポート指定です。 value: "\000\001" はつまり、転送先が port 1 であることを意味します。
+Packet-Out processing in the P4 Runtime is performed by specifying a 'packet' in a StreamMessageRequest message. The file packetout.txt is the exact content of this StreamMessageRequest message.
+- 'payload' contains the entire data-link layer packet. Since octal " \377 \377" is " \xff" in hexadecimal notation, this payload means that the destination and source MAC addresses are both ff:ff:ff:ff:ff:ff, Protocol Type is 00, and some data follows it as ABCDE ....
+- 'metadata' with metadata_id1 is the port specification for Packet Out destination. value: " \000 \001" means the destination is port 1.
 
-### Packet Out 操作
+### Packet-Out operation
 
-P4Runtime Shell 側で Request() 関数を起動します。Request() 関数は私が標準の P4Runtime Shell に追加した機能です。指定されたファイルからメッセージ内容を読み取り、これをP4RuntimeのStreamMessageRequest メッセージとしてスイッチに送り込みます。
-特に戻り値やメッセージは返ってきません。コマンド実行後に、画面上には送信するメッセージの内容をprintしています。
+Do the Request() function on the P4 Runtime Shell side. The Request() function is what I added to the standard P4 Runtime Shell. It reads the message content from the specified file then sends it to the switch as a P4 Runtime StreamMessageRequest message.
+No return value or message is returned. The contents of the message to be sent are printed on the screen.
 
 ```bash
 P4Runtime sh >>> Request("/tmp/packetout.txt")                                                                                             
@@ -40,16 +40,16 @@ packet {
 P4Runtime sh >>> 
 ```
 
-#### パケット検出
+#### Packet detection
 
-上の操作によって、送り込んだパケットがスイッチの port 1 から送信されていることを、Mininet の h1 の eth0 ポート（h1-eth0）をモニタリングして確認します。tcpdump には -XX を付けるとヘッダごと hexdump してくれて便利ですね。
+Monitor the eth0 port on h1 (h1-eth0) on Mininet to verify that the incoming packets are from the port 1 of the switch. It is convenient to add -XX to tcpdump to show the hex dump of the whole header.
 
 ```bash
 mininet> h1 tcpdump -XX -i h1-eth0
 tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on h1-eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
 ```
-ここで待ち状態になるでしょうから、もう一度、上記の Packet Out 操作をしてください。すると以下のような表示が出るでしょう。
+Since it will be in the waiting state, perform the above Packet Out operation again. You will see the following display.
 ```bash
 14:38:51.525754 Broadcast STP > Broadcast Unknown DSAP 0x40 Unnumbered, disc, Flags [Command], length 14
 	0x0000:  ffff ffff ffff ffff ffff ffff 0000 4142  ..............AB
@@ -58,11 +58,11 @@ listening on h1-eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
 
 
 
-これで Packet-Out 処理の確認ができました。
+You have now confirmed the Packet-Out processing.
 
 
 
 ## Next Step
 
-#### Tutorial 2: [Packet-In 処理](t2_packet-in.md)
+#### Tutorial 2: [Packet-In Processing](t2_packet-in.md)
 
