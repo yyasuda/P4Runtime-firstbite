@@ -3,8 +3,6 @@ Simple P4Runtime tutorial for starters
 
 See [Japanese document](README_ja.md).
 
-Yutaka Yasuda.
-
 ## Introduction
 
 The code and data in this repository were created as an easy starting point for first-timers using P4 Runtime to control a P4 Switch. It is assumed that you have some knowledge of P4 and P4 Runtime. I hope it will be a good entry point for people who are trying it out for the first time.
@@ -85,14 +83,4 @@ This tutorial did not go into depth into the internal structure of the system, b
 
 - [P4<sub>16</sub> Portable Switch Architecture (PSA)](https://p4.org/specs/) v1.1 [[HTML](https://p4.org/p4-spec/docs/PSA-v1.1.0.html)] [[PDF](https://p4.org/p4-spec/docs/PSA-v1.1.0.pdf)]
   In the above P4 Runtime Specification, there are some statements that P4 Runtime assumes PSA to some extent, such as section 1.2 In Scope. I didn't have anything to do with PSA specific things in this tutorial, but it's worth reading if you're interested.
-
-## Acknowledgements
-
-This tutorial is motivated by the fact that when I wanted to try out the Packet-In process (especially on the Wedge Switch), I couldn't find any documentation to try it out easily. To get to the current understanding of myself, I spent a lot of time reading specifications and code, like reverse engineering, collecting scattered information and doing a lot of trial and error.
-
-I would like to thank Ishihara, Nishi, and Kotani for helping me with many of these tasks. In particular, ether_switch.p4 used in this tutorial is an addition to the one originally written by [Kotani](https://gist.github.com/daisuke-k/1714c176e62280cc8627dc5e96846e56).
-
-Hope this article will help you to get started with P4Runtime.
-
-Yutaka Yasuda, Kyoto Sangyo University, Japan.
 
