@@ -84,3 +84,13 @@ This tutorial did not go into depth into the internal structure of the system, b
 - [P4<sub>16</sub> Portable Switch Architecture (PSA)](https://p4.org/specs/) v1.1 [[HTML](https://p4.org/p4-spec/docs/PSA-v1.1.0.html)] [[PDF](https://p4.org/p4-spec/docs/PSA-v1.1.0.pdf)]
   In the above P4 Runtime Specification, there are some statements that P4 Runtime assumes PSA to some extent, such as section 1.2 In Scope. I didn't have anything to do with PSA specific things in this tutorial, but it's worth reading if you're interested.
 
+### CPU port changes
+
+CPU port information is at the beginning of ether_switch.p4. If necessary, update it and recompile.
+
+```C++
+#define CPU_PORT 255
+```
+
+If you don't know the CPU port number of the switch you are testing, [P4Runtime-CPUport-finder](https://github.com/yyasuda/P4Runtime-CPUport-finder) may help.
+
