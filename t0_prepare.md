@@ -6,7 +6,7 @@ The P4 switch program must be compiled before the experiment. Then start Mininet
 
 #### Create working directory and copy a file
 
-Create a/tmp/ether _ switch directory for your work and copy the P4 program (ether_switch.p4) from this tutorial.
+Create a/tmp/ether_switch directory for your work and copy the P4 program (ether_switch.p4) from this tutorial.
 
 ```bash
 $ mkdir /tmp/ether_switch
@@ -65,7 +65,7 @@ s1 .⚡️ simple_switch_grpc @ 50001
 *** Starting CLI:
 mininet>
 ```
-You can see that port1 on s1 is connected to h1 and port2 is connected to h2.
+You can see that port1 on s1 is connected to h1 and port 2 is connected to h2.
 ```bash
 mininet> net
 h1 h1-eth0:s1-eth1
@@ -88,6 +88,8 @@ h1-eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 ## Connecting P4 Runtime Shell to Mininet
 
 ### Launching P4Runtime Shell
+
+In this tutorial, we use [modified P4Runtime Shell](https://github.com/yyasuda/p4runtime-shell). Here is [Docker Image](https://hub.docker.com/r/yutakayasuda/p4runtime-shell-dev) too.
 
 ```bash
 Cecil(133)% docker run -it -v /tmp/ether_switch/:/tmp/ yutakayasuda/p4runtime-shell-dev /bin/bash

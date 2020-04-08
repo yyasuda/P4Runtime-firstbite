@@ -10,7 +10,7 @@ Copy the packet-out message file (packetout.txt) from this tutorial to the /tmp/
 $ cp 1to2.txt /tmp/ether_switch
 $ cat /tmp/ether_switch/packetout.txt
 packet {
-  payload: "\377\377\377\377\377\377\377\377\377\377\377\377\000\000ABCDEFGHIJKLMN"
+  payload: "\377\377\377\377\377\377\377\377\377\377\377\377\000\0001234567890123456789012345678901234567890123456789012345678901234567890123456789"
   metadata {
     metadata_id: 1
     value: "\000\001"
@@ -30,7 +30,7 @@ No return value or message is returned. The contents of the message to be sent a
 ```bash
 P4Runtime sh >>> Request("/tmp/packetout.txt")                                                                                             
 packet {
-  payload: "\377\377\377\377\377\377\377\377\377\377\377\377\000\000ABCDEFGHIJKLMN"
+  payload: "\377\377\377\377\377\377\377\377\377\377\377\377\000\0001234567890123456789012345678901234567890123456789012345678901234567890123456789"
   metadata {
     metadata_id: 1
     value: "\000\001"
@@ -51,9 +51,13 @@ listening on h1-eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
 ```
 Since it will be in the waiting state, perform the above Packet Out operation again. You will see the following display.
 ```bash
-14:38:51.525754 Broadcast STP > Broadcast Unknown DSAP 0x40 Unnumbered, disc, Flags [Command], length 14
-	0x0000:  ffff ffff ffff ffff ffff ffff 0000 4142  ..............AB
-	0x0010:  4344 4546 4748 494a 4b4c 4d4e            CDEFGHIJKLMN
+14:38:51.525754 Broadcast STP > Broadcast Unknown DSAP 0x40 Unnumbered, disc, Flags [Command], length 79
+	0x0000:  ffff ffff ffff ffff ffff ffff 0000 3132  ..............12
+	0x0010:  3334 3536 3738 3930 3132 3334 3536 3738  3456789012345678
+	0x0020:  3930 3132 3334 3536 3738 3930 3132 3334  9012345678901234
+	0x0030:  3536 3738 3930 3132 3334 3536 3738 3930  5678901234567890
+	0x0040:  3132 3334 3536 3738 3930 3132 3334 3536  1234567890123456
+	0x0050:  3738 3930 3132 3334 3536 3738 39         7890123456789
 ```
 
 

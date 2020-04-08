@@ -90,6 +90,8 @@ h1-eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 #### P4Runtime Shellの起動
 
+このチュートリアルでの実験には、[改造した P4Runtime Shell](https://github.com/yyasuda/p4runtime-shell) を用います。[Docker Image](https://hub.docker.com/r/yutakayasuda/p4runtime-shell-dev) もあります。
+
 ```bash
 Cecil(133)% docker run -it -v /tmp/ether_switch/:/tmp/ yutakayasuda/p4runtime-shell-dev /bin/bash
 root@d633c64bbb3c:/p4runtime-sh# . activate 
