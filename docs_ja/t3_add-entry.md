@@ -1,10 +1,14 @@
 ## Tutorial 3: テーブルへのエントリ追加
 
-Packet I/O処理は、P4Runtime のStreamMessageRequest / StreamMessageResponse メッセージを用いて行われます。P4Runtimeには他にWriteRequestメッセージがあり、これを用いてテーブルなどのP4Runtime Entityの内容を更新することができます。ここではテーブルにMACアドレスを登録し、それに従ってスイッチに接続されたホストから送出されたpingパケットが、指定したポートに出力されることを確認します。
+Tutorial 1, 2 で行った Packet I/O処理は、P4Runtime のStreamMessageRequest / StreamMessageResponse メッセージを用いて行われます。P4Runtimeには他にWriteRequestメッセージがあり、これを用いてテーブルなどのP4Runtime Entityの内容を更新することができます。このTutorial 3では、テーブルにMACアドレスを登録し、それに従ってスイッチに接続されたホストから送出されたpingパケットが、指定したポートに出力されることを確認します。
 
 ### ファイルのコピー
 
-作業用に作った /tmp/ether_switch ディレクトリに、この Tutorial にあるエントリ追加のためのメッセージファイル（1to2.txt）をコピーします。このメッセージは h2 の MAC アドレス 00:00:00:00:00:02 向けのパケットを port 2 に送るものです。少しファイルの中を見てみましょう。
+作業用に作った /tmp/ether_switch ディレクトリに、この Tutorial にあるエントリ追加のためのメッセージファイル（1to2.txt）をコピーします。このメッセージは h2 (MAC アドレス 00:00:00:00:00:02) 向けのパケットを port 2 に送る内容を、テーブルにセットします。
+
+<img src="../t3_table.png" alt="attach:(table entry)" title="Table Entry" width="350">
+
+少しファイルの中を見てみましょう。
 
 ```bash
 $ cp 1to2.txt /tmp/ether_switch
@@ -48,14 +52,24 @@ preamble {
 (snip...)
 ```
 
-同様に action_id: 16838673 は MyIngress.forward を指し、続く param_id: 1 の value は 16 進表記で 2 バイトぶん使って、出力先ポートが 2 であることを示しています。この時少し混乱するのは、P4 プログラムにおける packet_out_header_t の egress_port の定義は 9bit 幅であり、param_id: 1 で指定する value の 2 バイトの、下位9bitが使われる、ということです。
+同様に action_id: 16838673 は MyIngress.forward を指し、続く param_id: 1 の value は 16 進表記で 2 バイトぶん使って、出力先ポートが 2 であることを示しています。この時少し混乱するのは、P4 プログラムにおける standard_metadata の [egress_spec](https://github.com/p4lang/p4c/blob/master/p4include/v1model.p4#L80) の定義は 9bit 幅であり、param_id: 1 で指定する value の 2 バイトの、下位9bitが使われる、ということです。
 
 ```C++
-@controller_header("packet_out")
-header packet_out_header_t {
-    bit<9> egress_port;
-    bit<7> _pad;
-}
+#if V1MODEL_VERSION >= 20200408
+typedef bit<9>  PortId_t;       // should not be a constant size?
+#endif
+
+@metadata @name("standard_metadata")
+struct standard_metadata_t {
+#if V1MODEL_VERSION >= 20200408
+    PortId_t    ingress_port;
+    PortId_t    egress_spec;
+    PortId_t    egress_port;
+#else
+    bit<9>      ingress_port;
+    bit<9>      egress_spec;
+    bit<9>      egress_port;
+#endif
 ```
 
 （私は最初ここが上位ビットから9bit ぶん取り出されると思い込んでしまい、'\x01\x00' と書いて期待通り動かず悩みました。）

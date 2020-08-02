@@ -41,6 +41,16 @@ root@f53fc79201b8:/tmp#
 
 ここで生成した p4info.txt と ether_switch.json を使って、あとで P4Runtime Shell を起動することになります。
 
+### システム構成
+
+今回実験する環境のシステム構成を以下の図に示します。スイッチは Mininet 環境を使って、2 port のものを用意します。P4Runtime Shellをコントローラの役割に使います。
+
+<img src="../t0_structure.png" alt="attach:(system structure)" title="System Structure" width="500">
+
+P4Runtimeではコントローラとスイッチの間をgRPCで接続します。Mininetの起動時にはgRPCで接続するためのポート番号(TCP 5000)を指定します。P4Runtime Shellの起動時には接続対象となるMininet環境のIPアドレスとポート番号を指定します。P4Runtime Shell は起動されると、同様に起動時に指定されたP4プログラムをgRPCのコネクションを通じてスイッチにインストールします。
+
+以下に具体的な手順を示します。
+
 ### Mininet 環境の立ち上げ
 
 P4Runtimeに対応した Mininet 環境を、やはりDocker環境で起動します。起動時に --arp と --mac オプションを指定して、ARP 処理無しに ping テストなどができるようにしてあることに注意してください。

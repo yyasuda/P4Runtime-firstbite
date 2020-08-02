@@ -39,7 +39,17 @@ ether_switch.json  ether_switch.p4  ether_switch.p4i  p4info.txt
 root@f53fc79201b8:/tmp# 
 ```
 
-You will later launch the P4 Runtime Shell using the p4info.txt and ether_switch.json you generated.
+You will launch the P4 Runtime Shell later, using the p4info.txt and ether_switch.json you generated.
+
+### System Structure
+
+Here is the picture of the system structure of this tutorial. We use Mininet to create 2 ports switch. And P4Runtime Shell plays as the controller role. 
+
+<img src="t0_structure.png" alt="attach:(system structure)" title="System Structure" width="500">
+
+P4Runtime uses gRPC to connect the controller and the switch. Then the port number (TCP 5000) will be specified to start Mininet. And needs to tell the IP address and the port number of the Mininet environment to P4Runtime Shell. After P4Runtime Shell starts,  it will install specified P4 program to the switch through the gRPC connection.
+
+The procedures are shown below
 
 ### Launching the Mininet Environment
 

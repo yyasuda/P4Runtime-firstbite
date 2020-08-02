@@ -1,10 +1,12 @@
 ## Tutorial 4: Packet Round Trip
 
-After Tutorial 3, add another entry to the table to verify that the ping packets are correctly going back and forth between the two hosts.
+After Tutorial 3, add another entry to the table to verify that the ping packets are correctly going back and forth between the two hosts, as follows;
+
+<img src="t4_table.png" alt="attach:(table entry)" title="Table Entry" width="350">
 
 ###  Copy a file
 
-The '1to2.txt' file we used in our add-entry experiment was a message to send a packet to port2 destined for h2 with MAC address 00:00:00:00:00:02. There is a message on '2to1.txt' file to make this return. Copy it to the /tmp/ether_switch directory you have created for your work.
+The '1to2.txt' file we used in our add-entry experiment was a message to send a packet to port2 destined for h2 (MAC address 00:00:00:00:00:02). There is a message on '2to1.txt' file to make this return. Copy it to the /tmp/ether_switch directory you have created for your work.
 
 The contents of the file are as follows.
 

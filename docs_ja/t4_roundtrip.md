@@ -1,6 +1,8 @@
 ## Tutorial 4: パケットの往復
 
-Tutorial 3 に加えて、もう一つエントリをテーブルに追加し、二つのホストの間でping パケットが正しく往復することを確認します。
+Tutorial 3 に加えて、以下の図のようにもう一つエントリをテーブルに追加し、二つのホストの間でping パケットが正しく往復することを確認します。
+
+<img src="../t4_table.png" alt="attach:(table entry)" title="Table Entry" width="350">
 
 ###  ファイルのコピー
 

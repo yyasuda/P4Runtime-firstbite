@@ -1,10 +1,14 @@
 ## Tutorial 3: Adding Entries to the Table
 
-Packet I/O processing is performed using StreamMessageRequest / StreamMessageResponse messages of P4Runtime. P4 Runtime also has a WriteRequest message that can be used to update the contents of the P4 Runtime Entity, such as tables. Here, you register the MAC address in a table. And verify that a ping packet from the host attached to the switch outputs to the specified port accordingly.
+As you have tested in Tutorial 1 and 2, Packet I/O processing is performed using StreamMessageRequest / StreamMessageResponse messages of P4Runtime. P4 Runtime also has a WriteRequest message that can be used to update the contents of the P4 Runtime Entity, such as tables. Here, in Tutorial 3, you register the MAC address in a table. And verify that a ping packet from the host attached to the switch outputs to the specified port accordingly.
 
 ### Copy a file
 
-Copy the message file (1to2.txt) from this tutorial for adding entries to the /tmp/ether_switch directory you have created for your work. This message sends a packet to port 2 for the MAC address 00: 00: 00: 00: 00: 02 of h2. Let's take a look inside the file.
+Copy the message file (1to2.txt) from this tutorial for adding entries to the /tmp/ether_switch directory you have created for your work. This message includes the info to sends a packet to port 2 for the h2 (MAC address 00:00:00:00:00:02). 
+
+<img src="t3_table.png" alt="attach:(table entry)" title="Table Entry" width="350">
+
+Let's take a look inside the file.
 
 ```bash
 $ cp 1to2.txt /tmp/ether_switch
@@ -48,14 +52,24 @@ preamble {
 (snip...)
 ```
 
-Similarly, action_id: 16838673 points to MyIngress.forward, and the value of the following param_id: 1 uses 2 bytes in hexadecimal notation to indicate that the destination port is 2. The confusion at this time is that the definition of egress_port of packet_out_header_t in the P4 program is 9 bits wide, and the lower 9 bits of 2 bytes of the value specified by param_id: 1 are used.
+Similarly, action_id: 16838673 points to MyIngress.forward, and the value of the following param_id: 1 uses 2 bytes in hexadecimal notation to indicate that the destination port is 2. The confusion at this time is that the definition of [egress_spec](https://github.com/p4lang/p4c/blob/master/p4include/v1model.p4#L80) of standard_metadata in the P4 program is 9 bits wide, and the lower 9 bits of 2 bytes of the value specified by param_id: 1 are used.
 
 ```C++
-@controller_header("packet_out")
-header packet_out_header_t {
-    bit<9> egress_port;
-    bit<7> _pad;
-}
+#if V1MODEL_VERSION >= 20200408
+typedef bit<9>  PortId_t;       // should not be a constant size?
+#endif
+
+@metadata @name("standard_metadata")
+struct standard_metadata_t {
+#if V1MODEL_VERSION >= 20200408
+    PortId_t    ingress_port;
+    PortId_t    egress_spec;
+    PortId_t    egress_port;
+#else
+    bit<9>      ingress_port;
+    bit<9>      egress_spec;
+    bit<9>      egress_port;
+#endif
 ```
 
 (Initially, I was convinced that this would be taken out of the upper bits by 9, so I wrote '\x01\x00' and did not work as expected.)
