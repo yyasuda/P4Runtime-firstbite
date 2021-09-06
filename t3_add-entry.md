@@ -107,7 +107,7 @@ action {
 P4Runtime sh >>>       
 ```
 
-いまはエントリに追加されることを確認する方法だけを示しておきますが、以下のようにして実際に転送されていることを確認することもできます。
+For now, we just show you how to check that the entry has been successfully added here. You can also verify that it is actually transmitted by doing the following. 
 
 - Send some packets over Mininet as `h1ping -c 1 h2` (See Tutorial 2)
 - Confirm the reception on h2 as `h2 tcpdump -XX -i h2-eth0` (See Tutorial 1)
